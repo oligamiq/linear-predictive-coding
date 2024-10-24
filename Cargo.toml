@@ -2,8 +2,11 @@
 name = "linear-predictive-coding"
 version = "0.1.0"
 edition = "2021"
+description = "Linear Predictive Coding. calc LPC coefficients from audio signal."
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/oligamiq/linear-predictive-coding"
 
 [dependencies]
 ndarray = "^0"
 num-traits = "0.2"
-ndarray-inverse = { git = "https://github.com/oligamiq/ndarray-inverse"}
+# ndarray-inverse = { git = "https://github.com/oligamiq/ndarray-inverse"}

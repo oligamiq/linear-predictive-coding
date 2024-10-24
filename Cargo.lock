@@ -13,7 +13,6 @@ name = "linear-predictive-coding"
 version = "0.1.0"
 dependencies = [
  "ndarray",
- "ndarray-inverse",
  "num-traits",
 ]
 
@@ -40,15 +39,6 @@ dependencies = [
  "portable-atomic",
  "portable-atomic-util",
  "rawpointer",
-]
-
-[[package]]
-name = "ndarray-inverse"
-version = "0.1.9"
-source = "git+https://github.com/oligamiq/ndarray-inverse#4f1d0320d25c92939e98613e7b9c655314ec1e6c"
-dependencies = [
- "ndarray",
- "num-traits",
 ]
 
 [[package]]
