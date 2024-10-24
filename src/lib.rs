@@ -177,3 +177,18 @@ mod tests {
         assert_eq!(calc_lpc_by_burg(a.view(), depth), expected);
     }
 }
+
+pub fn dct(signal: ArrayView1<f64>) -> Array1<f64> {
+    signal
+        .iter()
+        .enumerate()
+        .map(|(k, _)| {
+            2. * (0..signal.len()).fold(0., |acc, n| {
+                acc + signal[n]
+                    * (std::f64::consts::PI * k as f64 * (2. * n as f64 + 1.)
+                        / (2. * signal.len() as f64))
+                        .cos()
+            })
+        })
+        .collect()
+}
