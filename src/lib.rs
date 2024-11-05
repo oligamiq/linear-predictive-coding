@@ -1,5 +1,5 @@
 use ndarray::prelude::*;
-use ndarray_inverse::Inverse;
+// use ndarray_inverse::Inverse;
 
 /// 自己相関関数を求める関数
 /// # Arguments
@@ -20,30 +20,30 @@ pub fn correlate(a: ArrayView1<f64>) -> Array1<f64> {
         .collect()
 }
 
-pub fn calc_lpc_by_low_speed(a: ArrayView1<f64>, depth: usize) -> Array1<f64> {
-    let r = correlate(a);
+// pub fn calc_lpc_by_low_speed(a: ArrayView1<f64>, depth: usize) -> Array1<f64> {
+//     let r = correlate(a);
 
-    let mut large_r: Array2<f64> = Array2::zeros((depth, depth));
-    for i in 0..depth {
-        for j in 0..depth {
-            large_r[[i, j]] = r[(i as isize - j as isize).abs() as usize];
-        }
-    }
+//     let mut large_r: Array2<f64> = Array2::zeros((depth, depth));
+//     for i in 0..depth {
+//         for j in 0..depth {
+//             large_r[[i, j]] = r[(i as isize - j as isize).abs() as usize];
+//         }
+//     }
 
-    println!("{:?}", large_r);
+//     println!("{:?}", large_r);
 
-    let r = r.slice(s![1..=depth]);
+//     let r = r.slice(s![1..=depth]);
 
-    println!("{:?}", r);
+//     println!("{:?}", r);
 
-    let inverse_large_r = large_r.inv().unwrap();
+//     let inverse_large_r = large_r.inv().unwrap();
 
-    let a = inverse_large_r.dot(&r);
+//     let a = inverse_large_r.dot(&r);
 
-    let minus_a = a.mapv(|x| -x);
+//     let minus_a = a.mapv(|x| -x);
 
-    minus_a
-}
+//     minus_a
+// }
 
 /// https://qiita.com/hirokisince1998/items/fd50c0515c7788458fce
 /// Levinson-Durbin法
@@ -141,17 +141,17 @@ mod tests {
         assert_eq!(correlate(a.view()), expected);
     }
 
-    #[test]
-    fn test_calc_lpc_by_low_speed() {
-        let a = Array1::from(vec![2., 3., -1., -2., 1., 4., 1.]);
-        let depth = 3;
-        let expected = Array1::from(vec![
-            -0.6919053749597682,
-            0.7615062761506275,
-            -0.34575152880592214,
-        ]);
-        assert_eq!(calc_lpc_by_low_speed(a.view(), depth), expected);
-    }
+    // #[test]
+    // fn test_calc_lpc_by_low_speed() {
+    //     let a = Array1::from(vec![2., 3., -1., -2., 1., 4., 1.]);
+    //     let depth = 3;
+    //     let expected = Array1::from(vec![
+    //         -0.6919053749597682,
+    //         0.7615062761506275,
+    //         -0.34575152880592214,
+    //     ]);
+    //     assert_eq!(calc_lpc_by_low_speed(a.view(), depth), expected);
+    // }
 
     #[test]
     fn test_calc_lpc_by_high_speed() {
