@@ -47,7 +47,7 @@ pub fn correlate(a: ArrayView1<f64>) -> Array1<f64> {
 
 /// https://qiita.com/hirokisince1998/items/fd50c0515c7788458fce
 /// Levinson-Durbin法
-pub fn calc_lpc_by_high_speed(a: ArrayView1<f64>, depth: usize) -> Array1<f64> {
+pub fn calc_lpc_by_levinson_durbin(a: ArrayView1<f64>, depth: usize) -> Array1<f64> {
     let r = correlate(a);
     println!("{:?}", r);
     let r = r.slice(s![..=depth]);
@@ -162,7 +162,7 @@ mod tests {
             0.7615062761506278,
             -0.3457515288059223,
         ]);
-        assert_eq!(calc_lpc_by_high_speed(a.view(), depth), expected);
+        assert_eq!(calc_lpc_by_levinson_durbin(a.view(), depth), expected);
     }
 
     #[test]
@@ -176,19 +176,4 @@ mod tests {
         ]);
         assert_eq!(calc_lpc_by_burg(a.view(), depth), expected);
     }
-}
-
-pub fn dct(signal: ArrayView1<f64>) -> Array1<f64> {
-    signal
-        .iter()
-        .enumerate()
-        .map(|(k, _)| {
-            2. * (0..signal.len()).fold(0., |acc, n| {
-                acc + signal[n]
-                    * (std::f64::consts::PI * k as f64 * (2. * n as f64 + 1.)
-                        / (2. * signal.len() as f64))
-                        .cos()
-            })
-        })
-        .collect()
 }

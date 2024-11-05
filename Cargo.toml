@@ -1,6 +1,6 @@
 [package]
 name = "linear-predictive-coding"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2021"
 description = "Linear Predictive Coding. calc LPC coefficients from audio signal."
 license = "MIT OR Apache-2.0"
