@@ -1,7 +1,15 @@
+//! # lpc-rs
+//!
+//! `lpc-rs` is a library for calculating Linear Predictive Coding (LPC) coefficients.
+//! It provides three methods to calculate LPC coefficients.
+//! - Low speed method (Temporarily commented out due to suspension of updates to dependent libraries)
+//! - High speed method
+//! - Burg method
+
 use ndarray::prelude::*;
 // use ndarray_inverse::Inverse;
 
-/// 自己相関関数を求める関数
+/// find the correlation of the input array
 /// # Arguments
 /// [;N]
 ///
@@ -46,8 +54,12 @@ pub fn correlate(a: ArrayView1<f64>) -> Array1<f64> {
 // }
 
 /// https://qiita.com/hirokisince1998/items/fd50c0515c7788458fce
-/// Levinson-Durbin法
-pub fn calc_lpc_by_levinson_durbin(a: ArrayView1<f64>, depth: usize) -> Array1<f64> {
+/// Levinson-Durbin recursion
+pub fn calc_lpc_by_levinson_durbin(a: ArrayView1<f64>, depth: usize) -> Option<Array1<f64>> {
+    if a.len() < depth {
+        return None;
+    }
+
     let r = correlate(a);
     println!("{:?}", r);
     let r = r.slice(s![..=depth]);
@@ -84,11 +96,15 @@ pub fn calc_lpc_by_levinson_durbin(a: ArrayView1<f64>, depth: usize) -> Array1<f
 
     let (a, _) = calc_lpc_by_high_speed_inner(a, depth, r.view());
 
-    a.slice_move(s![1..])
+    Some(a.slice_move(s![1..]))
 }
 
-/// Burg法
-pub fn calc_lpc_by_burg(x: ArrayView1<f64>, depth: usize) -> Array1<f64> {
+/// Burg method
+pub fn calc_lpc_by_burg(x: ArrayView1<f64>, depth: usize) -> Option<Array1<f64>> {
+    if x.len() < depth {
+        return None;
+    }
+
     let mut a = Array1::<f64>::zeros(depth + 1);
 
     let mut k = Array1::<f64>::zeros(depth);
@@ -104,7 +120,7 @@ pub fn calc_lpc_by_burg(x: ArrayView1<f64>, depth: usize) -> Array1<f64> {
     for p in 0..depth {
         let kf = f.slice(s![p + 1..]);
         let kb = b.slice(s![..n - p - 1]);
-        // 要素ごとの積
+        // element-wise sum of squares
         let d = kf.iter().map(|x| x * x).sum::<f64>() + kb.iter().map(|x| x * x).sum::<f64>();
         k[p] = -2.0 * kf.iter().zip(kb.iter()).map(|(x, y)| x * y).sum::<f64>() / d;
         let u = a.slice(s![..=p + 1]);
@@ -127,7 +143,7 @@ pub fn calc_lpc_by_burg(x: ArrayView1<f64>, depth: usize) -> Array1<f64> {
             .for_each(|(x, bu)| *x += bu);
     }
 
-    a.slice_move(s![1..])
+    Some(a.slice_move(s![1..]))
 }
 
 #[cfg(test)]
@@ -162,7 +178,7 @@ mod tests {
             0.7615062761506278,
             -0.3457515288059223,
         ]);
-        assert_eq!(calc_lpc_by_levinson_durbin(a.view(), depth), expected);
+        assert_eq!(calc_lpc_by_levinson_durbin(a.view(), depth), Some(expected));
     }
 
     #[test]
@@ -174,6 +190,6 @@ mod tests {
             1.157238171254371,
             -0.5771692748969812,
         ]);
-        assert_eq!(calc_lpc_by_burg(a.view(), depth), expected);
+        assert_eq!(calc_lpc_by_burg(a.view(), depth), Some(expected));
     }
 }
