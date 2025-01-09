@@ -61,9 +61,9 @@ pub fn calc_lpc_by_levinson_durbin(a: ArrayView1<f64>, depth: usize) -> Option<A
     }
 
     let r = correlate(a);
-    println!("{:?}", r);
+    // println!("{:?}", r);
     let r = r.slice(s![..=depth]);
-    println!("{:?}", r);
+    // println!("{:?}", r);
 
     fn calc_lpc_by_high_speed_inner(
         a: ArrayView1<f64>,
@@ -126,8 +126,8 @@ pub fn calc_lpc_by_burg(x: ArrayView1<f64>, depth: usize) -> Option<Array1<f64>>
         let u = a.slice(s![..=p + 1]);
         let v = u.slice(s![..; -1]);
 
-        println!("u: {:?}", u);
-        println!("v: {:?}", v);
+        // println!("u: {:?}", u);
+        // println!("v: {:?}", v);
 
         let added = &u + &v.mapv(|x| x * k[p]);
         a.slice_mut(s![..=p + 1]).assign(&added.view());
