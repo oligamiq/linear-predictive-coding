@@ -55,7 +55,7 @@ pub fn correlate(a: ArrayView1<f64>) -> Array1<f64> {
 
 /// https://qiita.com/hirokisince1998/items/fd50c0515c7788458fce
 /// Levinson-Durbin recursion
-pub fn calc_lpc_by_levinson_durbin(a: ArrayView1<f64>, depth: usize) -> Option<Array1<f64>> {
+pub fn calc_lpc_by_levinson_durbin(a: ArrayView1<f64>, depth: usize) -> Option<(Array1<f64>, f64)> {
     if a.len() < depth {
         return None;
     }
@@ -94,9 +94,9 @@ pub fn calc_lpc_by_levinson_durbin(a: ArrayView1<f64>, depth: usize) -> Option<A
         }
     }
 
-    let (a, _) = calc_lpc_by_high_speed_inner(a, depth, r.view());
+    let (a, e) = calc_lpc_by_high_speed_inner(a, depth, r.view());
 
-    Some(a.slice_move(s![1..]))
+    Some((a.slice_move(s![1..]), e))
 }
 
 /// Burg method
@@ -178,7 +178,10 @@ mod tests {
             0.7615062761506278,
             -0.3457515288059223,
         ]);
-        assert_eq!(calc_lpc_by_levinson_durbin(a.view(), depth), Some(expected));
+        assert_eq!(
+            calc_lpc_by_levinson_durbin(a.view(), depth).unwrap().0,
+            expected
+        );
     }
 
     #[test]
